@@ -1,6 +1,6 @@
-{{AppVeyor build status badge for master branch}}
+[![Build status](https://ci.appveyor.com/api/projects/status/m6mpb7krr5ps31x3/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xwineventlog/branch/master)
 
-#{{ModuleName}}
+# xWinEventLog
 
 {{Description}}
 
