@@ -3,7 +3,7 @@
         TODO: Add Tests to validate that only the properties that don't match are updated in the set
 #>
 
-Import-Module 'C:\Program Files\WindowsPowerShell\Modules\xWinEventLog\DSCResources\MSFT_xWinEventLog\MSFT_xWinEventLog.psm1' -Prefix WinEventLog
+Import-Module '.\DSCResources\MSFT_xWinEventLog\MSFT_xWinEventLog.psm1' -Prefix WinEventLog
 
 Describe 'WinEventLog Get-TargetResource'{
     

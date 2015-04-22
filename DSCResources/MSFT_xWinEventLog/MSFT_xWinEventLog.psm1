@@ -74,25 +74,37 @@ function Set-TargetResource
     try
     {
         $log = Get-WinEvent -ListLog $logName
-        if ($MaximumSizeInBytes) { $log.MaximumSizeInBytes = $MaximumSizeInBytes}
-        if ($LogMode)            { $log.LogMode = $LogMode}
-        if ($SecurityDescriptor) { $log.SecurityDescriptor = $SecurityDescriptor}
-        $log.SaveChanges()
-        try
-        {
-            if ($PSBoundParameters.ContainsKey("IsEnabled")) 
-            { $log.IsEnabled = $IsEnabled}
-            $log.SaveChanges()
-        }catch
-        {
-            New-TerminatingError -errorId 'SetWinEventLogFailed' -errorMessage "`nCannot change IsEnabled on [WinEventLog]$logName" -errorCategory InvalidOperation
+        $update = $false
+
+        if ($PSBoundParameters.ContainsKey('MaximumSizeInBytes') -and $MaximumSizeInBytes -ne $log.MaximumSizeInBytes) { 
+            $log.MaximumSizeInBytes = $MaximumSizeInBytes
+            $update = $true
         }
+        
+        if ($PSBoundParameters.ContainsKey('LogMode') -and $LogMode -ne $log.LogMode){ 
+            $log.LogMode = $LogMode
+            $update = $true
+        }
+        
+        if ($PSBoundParameters.ContainsKey('SecurityDescriptor') -and $SecurityDescriptor -ne $log.SecurityDescriptor) { 
+            $log.SecurityDescriptor = $SecurityDescriptor
+            $update = $true
+        }
+        
+        if ($PSBoundParameters.ContainsKey("IsEnabled") -and $IsEnabled -ne $log.IsEnabled) { 
+            $log.IsEnabled = $IsEnabled
+            $update = $true
+        }
+        
+        if($update){$log.SaveChanges()}
+
 
     }catch
     {
-        write-Debug "ERROR: $($_|fl * -force|out-string)"
+        Write-Debug "ERROR: $($_|fl * -force|out-string)"
         New-TerminatingError -errorId 'SetWinEventLogFailed' -errorMessage $_.Exception -errorCategory InvalidOperation
     }
+
 
 }
 
