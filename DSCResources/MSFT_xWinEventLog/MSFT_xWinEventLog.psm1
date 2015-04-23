@@ -77,27 +77,21 @@ function Set-TargetResource
         $update = $false
 
         if ($PSBoundParameters.ContainsKey('MaximumSizeInBytes') -and $MaximumSizeInBytes -ne $log.MaximumSizeInBytes) { 
-            $log.MaximumSizeInBytes = $MaximumSizeInBytes
-            $update = $true
+            Set-MaximumSizeInBytes -LogName $LogName -MaximumSizeInBytes $MaximumSizeInBytes
         }
         
         if ($PSBoundParameters.ContainsKey('LogMode') -and $LogMode -ne $log.LogMode){ 
-            $log.LogMode = $LogMode
-            $update = $true
+            Set-LogMode -LogName $LogName -LogMode $LogMode
         }
         
         if ($PSBoundParameters.ContainsKey('SecurityDescriptor') -and $SecurityDescriptor -ne $log.SecurityDescriptor) { 
-            $log.SecurityDescriptor = $SecurityDescriptor
-            $update = $true
+            Set-SecurityDescriptor -LogName $LogName -SecurityDescriptor $SecurityDescriptor
         }
         
         if ($PSBoundParameters.ContainsKey("IsEnabled") -and $IsEnabled -ne $log.IsEnabled) { 
-            $log.IsEnabled = $IsEnabled
-            $update = $true
+            Set-IsEnabled -LogName $LogName -IsEnabled $IsEnabled
         }
-        
-        if($update){$log.SaveChanges()}
-
+       
 
     }catch
     {
@@ -149,7 +143,69 @@ function Test-TargetResource
     
 }
 
+Function Set-MaximumSizeInBytes{
+    [CmdletBinding()]
+    param(
+        [System.String]
+        $LogName,
 
+        [System.Int64]
+        $MaximumSizeInBytes
+
+    )
+
+    $log = Get-WinEvent -ListLog $logName
+    $log.MaximumSizeInBytes = $MaximumSizeInBytes
+    $log.SaveChanges()
+
+}
+
+Function Set-LogMode{
+    [CmdletBinding()]
+    param(
+        [System.String]
+        $LogName,
+
+        [System.String]
+        $LogMode
+    )
+
+    $log = Get-WinEvent -ListLog $LogName
+    $log.LogMode = $LogMode
+    $log.SaveChanges()
+}
+
+Function Set-SecurityDescriptor{
+    [CmdletBinding()]
+    param(
+        [System.String]
+        $LogName,
+
+        [System.String]
+        $SecurityDescriptor
+    )
+
+    $log = Get-WinEvent -ListLog $LogName
+    $log.SecurityDescriptor = $SecurityDescriptor
+    $log.SaveChanges()
+}
+
+
+Function Set-IsEnabled{
+    [CmdletBinding()]
+    param(
+        [System.String]
+        $LogName,
+
+        [System.Boolean]
+        $IsEnabled
+    )
+
+    $log = Get-WinEvent -ListLog $LogName
+    $log.IsEnabled = $IsEnabled
+    $log.SaveChanges()
+
+}
 Export-ModuleMember -Function *-TargetResource
 
 

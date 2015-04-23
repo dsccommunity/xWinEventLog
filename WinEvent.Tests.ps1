@@ -3,7 +3,7 @@
         TODO: Add Tests to validate that only the properties that don't match are updated in the set
 #>
 
-Import-Module '.\DSCResources\MSFT_xWinEventLog\MSFT_xWinEventLog.psm1' -Prefix WinEventLog
+Import-Module '.\DSCResources\MSFT_xWinEventLog\MSFT_xWinEventLog.psm1' -Prefix WinEventLog -Force
 
 Describe 'WinEventLog Get-TargetResource'{
     
@@ -105,14 +105,18 @@ Describe 'WinEventLog Set-TargetResource'{
         $Log.SaveChanges()
     }
     
+    Context 'Set is called and MaximumSizeInBytes does not match expected value'{
+        
+        It 'Should update MaximumSizeInBytes if they are different' {
+            Set-WinEventLogTargetResource -LogName 'Pester' -MaximumSizeInBytes '5111800'
+            (Get-WinEvent -ListLog 'Pester').MaximumSizeInBytes | Should Be '5111800'  
+        }
+        
+    }
+
     It 'Should update the LogMode'{
         Set-WinEventLogTargetResource -LogName 'Pester' -LogMode 'AutoBackup'
         (Get-WinEvent -ListLog 'Pester').LogMode | Should Be 'AutoBackup'        
-    }
-
-    It 'Should update MaximumSizeInBytes' {
-        Set-WinEventLogTargetResource -LogName 'Pester' -MaximumSizeInBytes '5111800'
-        (Get-WinEvent -ListLog 'Pester').MaximumSizeInBytes | Should Be '5111800'  
     }
 
     It 'Should update IsEnabled to false' {
@@ -123,6 +127,46 @@ Describe 'WinEventLog Set-TargetResource'{
     It 'Should update SecurityDescriptor' {
         Set-WinEventLogTargetResource -LogName 'Pester' -SecurityDescriptor 'O:BAG:SYD:(A;;0x7;;;BA)(A;;0x7;;;SO)(A;;0x3;;;IU)(A;;0x3;;;SU)(A;;0x3;;;S-1-5-3)(A;;0x3;;;S-1-5-33)(A;;0x1;;;S-1-5-32-573)' 
         (Get-WinEvent -ListLog 'Pester').SecurityDescriptor = 'O:BAG:SYD:(A;;0x7;;;BA)(A;;0x7;;;SO)(A;;0x3;;;IU)(A;;0x3;;;SU)(A;;0x3;;;S-1-5-3)(A;;0x3;;;S-1-5-33)(A;;0x1;;;S-1-5-32-573)' 
+    }
+
+    
+    #Setting up mocks to validate code is never called... not sure if this is good practice
+    Mock -CommandName Set-MaximumSizeInBytes -ModuleName MSFT_xWinEventLog -MockWith {
+        return $true
+    }
+    
+    Mock -CommandName Set-LogMode -ModuleName MSFT_xWinEventLog -MockWith {
+        return $true
+    }
+
+    Mock -CommandName Set-SecurityDescriptor -ModuleName MSFT_xWinEventLog -MockWith {
+        return $true
+    }
+
+    Mock -CommandName Set-IsEnabled -ModuleName MSFT_xWinEventLog -MockWith {
+        return $true
+    }
+
+    Context 'When desired value matches property'{
+
+         $Log = Get-WinEvent -ListLog 'Pester'
+         Set-WinEventLogTargetResource -LogName $Log.LogName -SecurityDescriptor $log.SecurityDescriptor -LogMode $log.LogMode -IsEnabled $log.IsEnabled 
+        
+        It 'Should not call Set-MaximumSizeInBytes'{
+            Assert-MockCalled -CommandName Set-MaximumSizeInBytes -ModuleName MSFT_xWinEventLog -Exactly 0
+        }
+
+        It 'Should not call Set-LogMode' {
+            Assert-MockCalled -CommandName Set-LogMode -ModuleName MSFT_xWinEventLog -Exactly 0
+        }
+
+        It 'Should not call Set-SecurityDescriptor'{
+            Assert-MockCalled -CommandName Set-SecurityDescriptor -ModuleName MSFT_xWinEventLog -Exactly 0
+        }
+
+        It 'Should not call Set-IsEnabled'{
+            Assert-MockCalled -CommandName Set-IsEnabled -ModuleName MSFT_xWinEventLog -Exactly 0
+        }
     }
 
     AfterAll {
