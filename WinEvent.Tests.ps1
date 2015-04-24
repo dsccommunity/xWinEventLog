@@ -1,9 +1,17 @@
-﻿<#
+﻿    <#
     .NOTES
-        TODO: Add Tests to validate that only the properties that don't match are updated in the set
+       
 #>
 
 Import-Module '.\DSCResources\MSFT_xWinEventLog\MSFT_xWinEventLog.psm1' -Prefix WinEventLog -Force
+
+#Getting initial Value for Capi2 Log so we can test the ability to set Isenabled to False
+#and then set it back to its original value when we're done
+$Capi2Log = Get-WinEvent -ListLog 'Microsoft-Windows-CAPI2/Operational'
+if($Capi2Log.IsEnabled){
+    $Capi2Log.IsEnabled = $false
+    $Capi2Log.SaveChanges()
+}
 
 Describe 'WinEventLog Get-TargetResource'{
     
@@ -103,32 +111,34 @@ Describe 'WinEventLog Set-TargetResource'{
         $Log = Get-WinEvent -ListLog 'Pester'
         $Log.LogMode = 'Circular'
         $Log.SaveChanges()
+
+        
     }
     
-    Context 'Set is called and MaximumSizeInBytes does not match expected value'{
-        
-        It 'Should update MaximumSizeInBytes if they are different' {
+    Context 'When set is called and actual value does not match expected value'{
+
+        It 'Should update MaximumSizeInBytes' {
             Set-WinEventLogTargetResource -LogName 'Pester' -MaximumSizeInBytes '5111800'
             (Get-WinEvent -ListLog 'Pester').MaximumSizeInBytes | Should Be '5111800'  
         }
+
+        It 'Should update the LogMode'{
+            Set-WinEventLogTargetResource -LogName 'Pester' -LogMode 'AutoBackup'
+            (Get-WinEvent -ListLog 'Pester').LogMode | Should Be 'AutoBackup'        
+        }
         
+        It 'Should update IsEnabled to false' {
+            Set-WinEventLogTargetResource -LogName 'Microsoft-Windows-CAPI2/Operational' -IsEnabled $false
+            (Get-WinEvent -ListLog 'Microsoft-Windows-CAPI2/Operational').IsEnabled | Should Be $false
+        }
+
+        It 'Should update SecurityDescriptor' {
+            Set-WinEventLogTargetResource -LogName 'Pester' -SecurityDescriptor 'O:BAG:SYD:(A;;0x7;;;BA)(A;;0x7;;;SO)(A;;0x3;;;IU)(A;;0x3;;;SU)(A;;0x3;;;S-1-5-3)(A;;0x3;;;S-1-5-33)(A;;0x1;;;S-1-5-32-573)' 
+            (Get-WinEvent -ListLog 'Pester').SecurityDescriptor = 'O:BAG:SYD:(A;;0x7;;;BA)(A;;0x7;;;SO)(A;;0x3;;;IU)(A;;0x3;;;SU)(A;;0x3;;;S-1-5-3)(A;;0x3;;;S-1-5-33)(A;;0x1;;;S-1-5-32-573)' 
+        }
     }
 
-    It 'Should update the LogMode'{
-        Set-WinEventLogTargetResource -LogName 'Pester' -LogMode 'AutoBackup'
-        (Get-WinEvent -ListLog 'Pester').LogMode | Should Be 'AutoBackup'        
-    }
-
-    It 'Should update IsEnabled to false' {
-        Set-WinEventLogTargetResource -LogName 'Pester' -IsEnabled $false
-        (Get-WinEvent -ListLog 'Pester').IsEnabled | Should Be $false
-    }
-
-    It 'Should update SecurityDescriptor' {
-        Set-WinEventLogTargetResource -LogName 'Pester' -SecurityDescriptor 'O:BAG:SYD:(A;;0x7;;;BA)(A;;0x7;;;SO)(A;;0x3;;;IU)(A;;0x3;;;SU)(A;;0x3;;;S-1-5-3)(A;;0x3;;;S-1-5-33)(A;;0x1;;;S-1-5-32-573)' 
-        (Get-WinEvent -ListLog 'Pester').SecurityDescriptor = 'O:BAG:SYD:(A;;0x7;;;BA)(A;;0x7;;;SO)(A;;0x3;;;IU)(A;;0x3;;;SU)(A;;0x3;;;S-1-5-3)(A;;0x3;;;S-1-5-33)(A;;0x1;;;S-1-5-32-573)' 
-    }
-
+    
     
     #Setting up mocks to validate code is never called... not sure if this is good practice
     Mock -CommandName Set-MaximumSizeInBytes -ModuleName MSFT_xWinEventLog -MockWith {
@@ -171,5 +181,9 @@ Describe 'WinEventLog Set-TargetResource'{
 
     AfterAll {
         Remove-EventLog -LogName 'Pester'
+        
+        $log = Get-WinEvent -ListLog 'Microsoft-Windows-CAPI2/Operational'
+        $log.IsEnabled = $Capi2Log.IsEnabled
+        $log.SaveChanges()
     }
 }
