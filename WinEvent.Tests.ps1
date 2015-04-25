@@ -3,7 +3,7 @@
        
 #>
 
-Import-Module '.\DSCResources\MSFT_xWinEventLog\MSFT_xWinEventLog.psm1' -Prefix WinEventLog -Force
+Import-Module $PSScriptRoot\DSCResources\MSFT_xWinEventLog\MSFT_xWinEventLog.psm1 -Prefix WinEventLog -Force
 
 #Getting initial Value for Capi2 Log so we can test the ability to set Isenabled to False
 #and then set it back to its original value when we're done
