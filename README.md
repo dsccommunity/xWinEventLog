@@ -20,6 +20,10 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ## Versions
 
+### 1.0.0.0
+
+* Fixed Set-TargetResource function in xWinEventLog resource not to reapply if resource is in desired state already.
+
 ### 0.0.1
 
 * Initial release with the following resource:
