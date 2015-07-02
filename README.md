@@ -20,6 +20,10 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ## Versions
 
+### Unreleased
+
+-  Added support for `-LogFilePath` in `xWinEventLog` (v1.0.0.1)
+
 ### 1.0.0.0
 
 * Fixed Set-TargetResource function in xWinEventLog resource not to reapply if resource is in desired state already.
@@ -44,6 +48,7 @@ Configuration Demo1
         IsEnabled          = $true
         LogMode            = "AutoBackup"
         MaximumSizeInBytes = 20mb
+        LogFilePath        = "c:\logfolder\MSPaint.evtx"
     }
 }
 Demo1 -OutputPath $env:temp

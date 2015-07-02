@@ -33,6 +33,7 @@ function Get-TargetResource
         $log = Get-WinEvent -ListLog $logName
         $returnValue = @{
             LogName = [System.String]$LogName
+            LogFilePath = [system.String]$log.LogFilePath
             MaximumSizeInBytes = [System.Int64]$log.MaximumSizeInBytes
             IsEnabled = [System.Boolean]$log.IsEnabled
             LogMode = [System.String]$log.LogMode
@@ -68,7 +69,10 @@ function Set-TargetResource
         $LogMode,
 
         [System.String]
-        $SecurityDescriptor
+        $SecurityDescriptor,
+
+        [System.String]
+        $LogFilePath
     )
 
     try
@@ -90,6 +94,10 @@ function Set-TargetResource
         
         if ($PSBoundParameters.ContainsKey("IsEnabled") -and $IsEnabled -ne $log.IsEnabled) { 
             Set-IsEnabled -LogName $LogName -IsEnabled $IsEnabled
+        }
+
+        if ($PSBoundParameters.ContainsKey("LogFilePath") -and $LogFilePath -ne $log.LogFilePath) { 
+            Set-LogFilePath -LogName $LogName -LogFilePath $LogFilePath
         }
        
 
@@ -124,7 +132,10 @@ function Test-TargetResource
         $LogMode,
 
         [System.String]
-        $SecurityDescriptor
+        $SecurityDescriptor,
+
+        [System.String]
+        $LogFilePath
     )
 
     try
@@ -134,6 +145,7 @@ function Test-TargetResource
         if ($PSBoundParameters.ContainsKey("IsEnabled")          -and $log.IsEnabled -ne $IsEnabled                   ) { return $false}
         if ($PSBoundParameters.ContainsKey("LogMode")            -and $log.LogMode -ne $LogMode                       ) { return $false}
         if ($PSBoundParameters.ContainsKey("SecurityDescriptor") -and $log.SecurityDescriptor -ne $SecurityDescriptor ) { return $false}
+        if ($PSBoundParameters.ContainsKey("LogFilePath")        -and $log.LogFilePath -ne $LogFilePath )               { return $false}
         return $true
     }catch
     {
@@ -206,6 +218,22 @@ Function Set-IsEnabled{
     $log.SaveChanges()
 
 }
+
+Function Set-LogFilePath{
+    [CmdletBinding()]
+    param(
+        [System.String]
+        $LogName,
+
+        [System.String]
+        $LogFilePath
+    )
+
+    $log = Get-WinEvent -ListLog $LogName
+    $log.LogFilePath = $LogFilePath
+    $log.SaveChanges()
+}
+
 Export-ModuleMember -Function *-TargetResource
 
 
