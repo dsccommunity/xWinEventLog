@@ -123,7 +123,7 @@ Describe 'WinEventLog Set-TargetResource'{
         $Log = Get-WinEvent -ListLog 'Pester'
         $Log.LogMode = 'Circular'
         $Log.SaveChanges()
-
+        New-Item -Path 'c:\tmp' -ItemType Directory -Force | Out-Null
         
     }
     
@@ -210,5 +210,6 @@ Describe 'WinEventLog Set-TargetResource'{
         $log = Get-WinEvent -ListLog 'Microsoft-Windows-CAPI2/Operational'
         $log.IsEnabled = $Capi2Log.IsEnabled
         $log.SaveChanges()
+        Remove-Item -Path 'c:\tmp' -Recurse -Force -ErrorAction SilentlyContinue
     }
 }
