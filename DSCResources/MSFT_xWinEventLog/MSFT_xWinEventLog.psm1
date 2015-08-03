@@ -1,4 +1,4 @@
-function New-TerminatingError
+﻿function New-TerminatingError
 {
     param
     (
