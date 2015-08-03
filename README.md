@@ -22,7 +22,10 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ### Unreleased
 
--  Added support for `-LogFilePath` in `xWinEventLog` (v1.0.0.1)
+
+### 1.1.0.0
+
+* Added LogFilePath property to allow setting alternative log location
 
 ### 1.0.0.0
 
