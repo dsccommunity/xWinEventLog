@@ -1,4 +1,4 @@
-﻿
+
 [ClassVersion("1.0.0.1"), FriendlyName("xWinEventLog")]
 class MSFT_xWinEventLog : OMI_BaseResource
 {
