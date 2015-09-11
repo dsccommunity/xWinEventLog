@@ -20,9 +20,11 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ## Versions
 
-### Unreleased
+### 1.1.0.0
 
--  Added support for `-LogFilePath` in `xWinEventLog` (v1.0.0.1)
+* MSFT_xWinEventLog: Added LogFilePath parameter to
+* Fixed tests
+* Fixed encoding
 
 ### 1.0.0.0
 
