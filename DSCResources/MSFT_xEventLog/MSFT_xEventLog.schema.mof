@@ -3,7 +3,7 @@
 class MSFT_xEventLog : OMI_BaseResource
 {
     [Key, Description("Name of the event log")] String LogName;
-    [Write, Description("Specifies the names of the event log sources.")] String Source;
+    [Write, Description("Specifies the names of the event log sources.")] String Source[];
 };
 
 
