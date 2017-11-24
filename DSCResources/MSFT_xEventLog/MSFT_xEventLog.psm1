@@ -84,7 +84,7 @@ function Set-TargetResource
         try
         {
             Write-Verbose -Message "Updating $LogName with sources specified: $Source"
-            New-EventLog -LogName $LogName -Source $missingSource -ErrorAction Stop
+            New-EventLog -LogName $LogName -Source $missingSource.InputObject -ErrorAction Stop
             $Source = $missingSource
         }
         catch
