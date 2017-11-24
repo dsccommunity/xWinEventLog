@@ -79,12 +79,14 @@ function Set-TargetResource
 
     if ($currentEventLog)
     {
-        $missingSource = Compare-Object -ReferenceObject $currentEventLog.Source -DifferenceObject $Source | Where-Object {$_.SideIndicator -eq '=>'}
+        $missingSource = Compare-Object -ReferenceObject $currentEventLog.Source -DifferenceObject $Source |
+                Where-Object {$_.SideIndicator -eq '=>'} |
+                    Select-Object -ExpandProperty InputObject
 
         try
         {
             Write-Verbose -Message "Updating $LogName with sources specified: $Source"
-            New-EventLog -LogName $LogName -Source $missingSource.InputObject -ErrorAction Stop
+            New-EventLog -LogName $LogName -Source $missingSource -ErrorAction Stop
             $Source = $missingSource
         }
         catch
