@@ -2,13 +2,13 @@
 {
     param
     (
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory = $true)]
         [String]$errorId,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory = $true)]
         [String]$errorMessage,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.ErrorCategory]$errorCategory
     )
 
@@ -23,13 +23,14 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $LogName
     )
 
     try
     {
+        Write-Verbose -Message "Getting $LogName details."
         $log = Get-EventLog -LogName $LogName
         $returnValue = @{
             LogName = [System.String]$LogName
@@ -50,10 +51,11 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $LogName,
 
+        [Parameter()]
         [System.String[]]
         $Source
     )
@@ -120,10 +122,11 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $LogName,
 
+        [Parameter()]
         [System.String[]]
         $Source
     )
@@ -132,7 +135,8 @@ function Test-TargetResource
     {
         Write-Verbose -Message "Checking for $LogName."
         $log = Get-TargetResource -LogName $LogName
-        If ($Log.Source -ne $Source) {
+        If ($Log.Source -ne $Source)
+        {
             Write-Verbose -Message "$LogName found but sources do not match."
             return $false
         }
