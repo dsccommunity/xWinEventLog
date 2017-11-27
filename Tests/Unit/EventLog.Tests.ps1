@@ -88,22 +88,22 @@ Describe 'EventLog Test-TargetResource'{
 }
 
 Describe 'EventLog Set-TargetResource'{
-    Mock -CommandName Write-EventLog -MockWith {}
+    #Mock -CommandName Write-EventLog -MockWith {}
     Mock -CommandName Write-Verbose -MockWith {}
 
     Context 'When set is called and event log does not exist' {
-        Mock -CommandName New-EventLog -MockWith { $true } -ParameterFilter { $LogName -eq 'Pester'}
         Mock -CommandName Get-TargetResource -ModuleName MSFT_xEventLog -MockWith { Throw }
-
-        It 'Should create the event log' {
-            Set-EventLogTargetResource -LogName 'Pester' -Source 'SetTargetResource'
-            Assert-MockCalled -CommandName New-EventLog -Exactly -Times 1
-            Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1
-        }
 
         It 'Should throw an error if it fails to create the new event log'{
             Mock -CommandName New-EventLog -MockWith {Throw}
             { Set-EventLogTargetResource -LogName 'Pester' -Source 'SetTargetResource' } | Should Throw
+        }
+
+        It 'Should create the event log' {
+            Mock -CommandName New-EventLog -MockWith { $true }
+            Set-EventLogTargetResource -LogName 'Pester' -Source 'SetTargetResource'
+            Assert-MockCalled -CommandName New-EventLog -Exactly -Times 1
+            Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1
         }
     }
 
