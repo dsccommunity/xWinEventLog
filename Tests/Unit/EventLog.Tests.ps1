@@ -92,7 +92,7 @@ Describe 'EventLog Set-TargetResource'{
     Mock -CommandName Write-Verbose -MockWith {}
 
     Context 'When set is called and event log does not exist' {
-        Mock -CommandName New-EventLog -MockWith { $true }
+        Mock -CommandName New-EventLog -MockWith { $true } -ParameterFilter { $LogName -eq 'Pester'}
         Mock -CommandName Get-TargetResource -ModuleName MSFT_xEventLog -MockWith { Throw }
 
         It 'Should create the event log' {
@@ -107,7 +107,7 @@ Describe 'EventLog Set-TargetResource'{
         }
     }
 
-    Context "When EventLog exists but Sources don't match"{
+    Context "When EventLog exists but Sources don't match" {
         Mock -CommandName Get-TargetResource -ModuleName MSFT_xEventLog -MockWith {
             [psobject]@{
                 LogName = 'Pester'
