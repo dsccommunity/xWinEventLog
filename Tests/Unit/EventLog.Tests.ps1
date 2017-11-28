@@ -87,42 +87,45 @@ Describe 'EventLog Test-TargetResource'{
     }
 }
 
-Describe 'EventLog Set-TargetResource'{
-    #Mock -CommandName Write-EventLog -MockWith {}
-    Mock -CommandName Write-Verbose -MockWith {}
+InModuleScope MSFT_xEventLog {
+    Describe 'EventLog Set-TargetResource'{
+        Mock -CommandName Write-EventLog -MockWith {}
+        Mock -CommandName Write-Verbose -MockWith {}
 
-    Context 'When set is called and event log does not exist' {
-        Mock -CommandName Get-TargetResource -ModuleName MSFT_xEventLog -MockWith { Throw }
+        Context 'When set is called and event log does not exist' {
+            Mock -CommandName Get-TargetResource -ModuleName MSFT_xEventLog -MockWith { Throw }
+            mock -CommandName New-EventLog -MockWith {} -ParameterFilter {$LogName -eq 'Pester' -and $Source -eq 'SetTargetResource'}
 
-        It 'Should throw an error if it fails to create the new event log'{
-            Mock -CommandName New-EventLog -MockWith {Throw}
-            { Set-EventLogTargetResource -LogName 'Pester' -Source 'SetTargetResource' } | Should Throw
-        }
-
-        It 'Should create the event log' {
-            Mock -CommandName New-EventLog -MockWith { $true }
-            Set-EventLogTargetResource -LogName 'Pester' -Source 'SetTargetResource'
-            Assert-MockCalled -CommandName New-EventLog -Exactly -Times 1
-            Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1
-        }
-    }
-
-    Context "When EventLog exists but Sources don't match" {
-        Mock -CommandName Get-TargetResource -ModuleName MSFT_xEventLog -MockWith {
-            [psobject]@{
-                LogName = 'Pester'
-                Source = @('SetTargetResource')
+            It 'Should create the event log' {
+                Set-EventLogTargetResource -LogName 'Pester' -Source 'SetTargetResource'
+                Assert-MockCalled -CommandName New-EventLog -Exactly -Times 1 -ParameterFilter {$LogName -eq 'Pester' -and $Source -eq 'SetTargetResource'}
+                Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1
             }
+
+            It 'Should throw an error if it fails to create the new event log'{
+                Mock -CommandName New-EventLog -MockWith {Throw}
+                { Set-EventLogTargetResource -LogName 'Pester' -Source 'ErrorSource' } | Should Throw
+            }
+
         }
 
-        It 'Should create 2 new sources when passed 3 with 1 already existing' {
-            Mock -CommandName New-EventLog -MockWith {}
-            $Source = @('SetTargetResource','TestTargetResource','GetTargetResource')
-            Set-EventLogTargetResource -LogName 'Pester' -Source $Source
-            Assert-MockCalled -CommandName New-EventLog -Exactly -Times 1
-            Assert-MockCalled -CommandName Write-EventLog -Exactly -Times 2
+        Context "When EventLog exists but Sources don't match" {
+            Mock -CommandName Get-TargetResource -ModuleName MSFT_xEventLog -MockWith {
+                [psobject]@{
+                    LogName = 'Pester'
+                    Source = @('SetTargetResource')
+                }
+            }
+
+            It 'Should create 2 new sources when passed 3 with 1 already existing' {
+                Mock -CommandName New-EventLog -MockWith {}
+                $Source = @('SetTargetResource','TestTargetResource','GetTargetResource')
+                Set-EventLogTargetResource -LogName 'Pester' -Source $Source
+                Assert-MockCalled -CommandName New-EventLog -Exactly -Times 1
+                Assert-MockCalled -CommandName Write-EventLog -Exactly -Times 2
+            }
+
         }
 
     }
-
 }
