@@ -1,9 +1,9 @@
 ﻿    <#
     .NOTES
-       
+
 #>
 
-Import-Module $PSScriptRoot\DSCResources\MSFT_xWinEventLog\MSFT_xWinEventLog.psm1 -Prefix WinEventLog -Force
+Import-Module $PSScriptRoot\..\..\DSCResources\MSFT_xWinEventLog\MSFT_xWinEventLog.psm1 -Prefix WinEventLog -Force
 
 #Getting initial Value for Capi2 Log so we can test the ability to set Isenabled to False
 #and then set it back to its original value when we're done
@@ -14,7 +14,7 @@ if($Capi2Log.IsEnabled){
 }
 
 Describe 'WinEventLog Get-TargetResource'{
-    
+
     Mock Get-WinEvent -ModuleName MSFT_xWinEventLog {
         $properties = @{
             MaximumSizeInBytes = '999'
@@ -23,8 +23,8 @@ Describe 'WinEventLog Get-TargetResource'{
             LogFilePath = 'c:\logs\test.evtx'
             SecurityDescriptor = 'TestDescriptor'
         }
-        
-        Write-Output (New-Object -TypeName PSObject -Property $properties)   
+
+        Write-Output (New-Object -TypeName PSObject -Property $properties)
     }
 
     $results = Get-WinEventLogTargetResource 'Application'
@@ -59,7 +59,7 @@ Describe 'WinEventLog Get-TargetResource'{
 }
 
 Describe 'WinEventLog Test-TargetResource'{
-    
+
     Mock Get-WinEvent -ModuleName MSFT_xWinEventLog {
         $properties = @{
             MaximumSizeInBytes = '5111808'
@@ -68,8 +68,8 @@ Describe 'WinEventLog Test-TargetResource'{
             LogFilePath = 'c:\logs\test.evtx'
             SecurityDescriptor = 'TestDescriptor'
         }
-        
-        Write-Output (New-Object -TypeName PSObject -Property $properties)   
+
+        Write-Output (New-Object -TypeName PSObject -Property $properties)
     }
 
     $params = @{
@@ -80,13 +80,13 @@ Describe 'WinEventLog Test-TargetResource'{
         LogFilePath = 'c:\logs\test.evtx'
         SecurityDescriptor = 'TestDescriptor'
     }
-    
-   
+
+
     It 'should return true when all properties match does not match'{
         $testResults = Test-WinEventLogTargetResource @params
         $testResults | Should Be $True
     }
-    
+
     It 'should return false when MaximumSizeInBytes does not match'{
         $testResults = Test-WinEventLogTargetResource -LogName 'Application' -MaximumSizeInBytes '1' -IsEnabled $true -SecurityDescriptor 'TestDescriptor' -LogMode 'Circular' -LogFilePath 'c:\logs\test.evtx'
         $testResults | Should Be $False
@@ -104,12 +104,12 @@ Describe 'WinEventLog Test-TargetResource'{
 
     It 'Should return false when SecurityDescriptor does not match'{
         $testResults = Test-WinEventLogTargetResource -LogName 'Application' -MaximumSizeInBytes '5111808' -IsEnabled $true -SecurityDescriptor 'TestDescriptorFail' -LogMode 'Circular' -LogFilePath 'c:\logs\test.evtx'
-        $testResults | Should Be $false    
+        $testResults | Should Be $false
     }
 
     It 'Should return false when LogFilePath does not match'{
         $testResults = Test-WinEventLogTargetResource -LogName 'Application' -MaximumSizeInBytes '5111808' -IsEnabled $true -SecurityDescriptor 'TestDescriptor' -LogMode 'Circular' -LogFilePath 'c:\logs\wrongfile.evtx'
-        $testResults | Should Be $false    
+        $testResults | Should Be $false
     }
 
     It 'Should call Get-WinEventLog' {
@@ -124,29 +124,29 @@ Describe 'WinEventLog Set-TargetResource'{
         $Log.LogMode = 'Circular'
         $Log.SaveChanges()
         New-Item -Path "$env:SystemDrive\tmp" -ItemType Directory -Force | Out-Null
-        
+
     }
-    
+
     Context 'When set is called and actual value does not match expected value'{
 
         It 'Should update MaximumSizeInBytes' {
             Set-WinEventLogTargetResource -LogName 'Pester' -MaximumSizeInBytes '5111800'
-            (Get-WinEvent -ListLog 'Pester').MaximumSizeInBytes | Should Be '5111800'  
+            (Get-WinEvent -ListLog 'Pester').MaximumSizeInBytes | Should Be '5111800'
         }
 
         It 'Should update the LogMode'{
             Set-WinEventLogTargetResource -LogName 'Pester' -LogMode 'AutoBackup'
-            (Get-WinEvent -ListLog 'Pester').LogMode | Should Be 'AutoBackup'        
+            (Get-WinEvent -ListLog 'Pester').LogMode | Should Be 'AutoBackup'
         }
-        
+
         It 'Should update IsEnabled to false' {
             Set-WinEventLogTargetResource -LogName 'Microsoft-Windows-CAPI2/Operational' -IsEnabled $false
             (Get-WinEvent -ListLog 'Microsoft-Windows-CAPI2/Operational').IsEnabled | Should Be $false
         }
 
         It 'Should update SecurityDescriptor' {
-            Set-WinEventLogTargetResource -LogName 'Pester' -SecurityDescriptor 'O:BAG:SYD:(A;;0x7;;;BA)(A;;0x7;;;SO)(A;;0x3;;;IU)(A;;0x3;;;SU)(A;;0x3;;;S-1-5-3)(A;;0x3;;;S-1-5-33)(A;;0x1;;;S-1-5-32-573)' 
-            (Get-WinEvent -ListLog 'Pester').SecurityDescriptor = 'O:BAG:SYD:(A;;0x7;;;BA)(A;;0x7;;;SO)(A;;0x3;;;IU)(A;;0x3;;;SU)(A;;0x3;;;S-1-5-3)(A;;0x3;;;S-1-5-33)(A;;0x1;;;S-1-5-32-573)' 
+            Set-WinEventLogTargetResource -LogName 'Pester' -SecurityDescriptor 'O:BAG:SYD:(A;;0x7;;;BA)(A;;0x7;;;SO)(A;;0x3;;;IU)(A;;0x3;;;SU)(A;;0x3;;;S-1-5-3)(A;;0x3;;;S-1-5-33)(A;;0x1;;;S-1-5-32-573)'
+            (Get-WinEvent -ListLog 'Pester').SecurityDescriptor = 'O:BAG:SYD:(A;;0x7;;;BA)(A;;0x7;;;SO)(A;;0x3;;;IU)(A;;0x3;;;SU)(A;;0x3;;;S-1-5-3)(A;;0x3;;;S-1-5-33)(A;;0x1;;;S-1-5-32-573)'
         }
 
         It 'Should update the LogFilePath'{
@@ -155,13 +155,13 @@ Describe 'WinEventLog Set-TargetResource'{
         }
     }
 
-    
-    
+
+
     #Setting up mocks to validate code is never called... not sure if this is good practice
     Mock -CommandName Set-MaximumSizeInBytes -ModuleName MSFT_xWinEventLog -MockWith {
         return $true
     }
-    
+
     Mock -CommandName Set-LogMode -ModuleName MSFT_xWinEventLog -MockWith {
         return $true
     }
@@ -181,8 +181,8 @@ Describe 'WinEventLog Set-TargetResource'{
     Context 'When desired value matches property'{
 
          $Log = Get-WinEvent -ListLog 'Pester'
-         Set-WinEventLogTargetResource -LogName $Log.LogName -SecurityDescriptor $log.SecurityDescriptor -LogMode $log.LogMode -IsEnabled $log.IsEnabled 
-        
+         Set-WinEventLogTargetResource -LogName $Log.LogName -SecurityDescriptor $log.SecurityDescriptor -LogMode $log.LogMode -IsEnabled $log.IsEnabled
+
         It 'Should not call Set-MaximumSizeInBytes'{
             Assert-MockCalled -CommandName Set-MaximumSizeInBytes -ModuleName MSFT_xWinEventLog -Exactly 0
         }
@@ -206,7 +206,7 @@ Describe 'WinEventLog Set-TargetResource'{
 
     AfterAll {
         Remove-EventLog -LogName 'Pester'
-        
+
         $log = Get-WinEvent -ListLog 'Microsoft-Windows-CAPI2/Operational'
         $log.IsEnabled = $Capi2Log.IsEnabled
         $log.SaveChanges()
