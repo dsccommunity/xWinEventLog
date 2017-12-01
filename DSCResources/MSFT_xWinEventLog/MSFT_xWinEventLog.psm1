@@ -23,7 +23,7 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $LogName
     )
@@ -55,7 +55,7 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $LogName,
 
@@ -91,7 +91,8 @@ function Set-TargetResource
             Set-MaximumSizeInBytes -LogName $LogName -MaximumSizeInBytes $MaximumSizeInBytes
         }
 
-        if ($PSBoundParameters.ContainsKey('LogMode') -and $LogMode -ne $log.LogMode){
+        if ($PSBoundParameters.ContainsKey('LogMode') -and $LogMode -ne $log.LogMode)
+        {
             Set-LogMode -LogName $LogName -LogMode $LogMode
         }
 
@@ -128,7 +129,7 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $LogName,
 
