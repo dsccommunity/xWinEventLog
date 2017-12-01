@@ -94,12 +94,22 @@ InModuleScope MSFT_xEventLog {
 
         Context 'When set is called and event log does not exist' {
             Mock -CommandName Get-TargetResource -ModuleName MSFT_xEventLog -MockWith { Throw }
-            mock -CommandName New-EventLog -MockWith {} -ParameterFilter {$LogName -eq 'Pester' -and $Source -eq 'SetTargetResource'}
+            #mock -CommandName New-EventLog -MockWith {}
 
-            It 'Should create the event log' {
+            It 'Should create the event log with a single source' {
+                mock -CommandName New-EventLog -MockWith {}
                 Set-EventLogTargetResource -LogName 'Pester' -Source 'SetTargetResource'
                 Assert-MockCalled -CommandName New-EventLog -Exactly -Times 1 -ParameterFilter {$LogName -eq 'Pester' -and $Source -eq 'SetTargetResource'}
                 Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1
+                Assert-MockCalled -CommandName Write-EventLog -Exactly -Times 1
+            }
+
+            It 'Should create the event log with multiple sources' {
+                mock -CommandName New-EventLog -MockWith {}
+                Set-EventLogTargetResource -LogName 'Pester' -Source @('SetTargetResource','TestTargetResource')
+                Assert-MockCalled -CommandName New-EventLog -Exactly -Times 1 -ParameterFilter {$LogName -eq 'Pester' -and $Source -Contains 'TestTargetResource'}
+                Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1
+                Assert-MockCalled -CommandName Write-EventLog -Exactly -Times 2
             }
 
             It 'Should throw an error if it fails to create the new event log'{
