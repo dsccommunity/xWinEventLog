@@ -1,12 +1,12 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/m6mpb7krr5ps31x3/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xwineventlog/branch/master)
-
 # xWinEventLog
+
+[![Build status](https://ci.appveyor.com/api/projects/status/m6mpb7krr5ps31x3/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xwineventlog/branch/master)
 
 The **xWinEventLog** module contains the **xWinEventLog** DSC resource which configures the Windows Event Logs.
 
 ## Contributing
-Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
 
+Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
 
 ## Resources
 
@@ -33,14 +33,14 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ### 0.0.1
 
 * Initial release with the following resource:
-    - xWinEventLog
+  * xWinEventLog
 
 ## Examples
 
 ### Configuring the MSPaint event log
 
 ```powershell
-$before = Get-WinEvent -ListLog "Microsoft-Windows-MSPaint/Admin" 
+$before = Get-WinEvent -ListLog "Microsoft-Windows-MSPaint/Admin"
 Configuration Demo1
 {
     Import-DscResource -module xWinEventLog
@@ -55,7 +55,7 @@ Configuration Demo1
 }
 Demo1 -OutputPath $env:temp
 Start-DscConfiguration -Path $env:temp -ComputerName localhost -Verbose -wait -debug
-$after = Get-WinEvent -ListLog "Microsoft-Windows-MSPaint/Admin" 
+$after = Get-WinEvent -ListLog "Microsoft-Windows-MSPaint/Admin"
 $before,$after | format-table -AutoSize LogName,IsEnabled,MaximumSizeInBytes,ProviderLatency,LogMode
 Get-DscConfiguration
 ```
