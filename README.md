@@ -21,10 +21,17 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **LogMode**: The log mode: { AutoBackup | Circular | Retained }
 * **SecurityDescriptor**: This is an SDDL string which configures access rights to the event log.
 
+### xEventLog
+
+* **LogName**: Name of the event log.
+* **Source**: Source(s) to create.
+
+
 ## Versions
 
 ### Unreleased
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
+* xEventLog added to allow creating new event logs with various sources.
 
 ### 1.1.0.0
 
@@ -46,7 +53,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ### Configuring the MSPaint event log
 
 ```powershell
-$before = Get-WinEvent -ListLog "Microsoft-Windows-MSPaint/Admin" 
+$before = Get-WinEvent -ListLog "Microsoft-Windows-MSPaint/Admin"
 Configuration Demo1
 {
     Import-DscResource -module xWinEventLog
@@ -61,7 +68,7 @@ Configuration Demo1
 }
 Demo1 -OutputPath $env:temp
 Start-DscConfiguration -Path $env:temp -ComputerName localhost -Verbose -wait -debug
-$after = Get-WinEvent -ListLog "Microsoft-Windows-MSPaint/Admin" 
+$after = Get-WinEvent -ListLog "Microsoft-Windows-MSPaint/Admin"
 $before,$after | format-table -AutoSize LogName,IsEnabled,MaximumSizeInBytes,ProviderLatency,LogMode
 Get-DscConfiguration
 ```
