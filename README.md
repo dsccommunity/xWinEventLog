@@ -25,6 +25,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ### Unreleased
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
+* Fix PSSA errors.
 
 ### 1.1.0.0
 
