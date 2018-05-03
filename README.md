@@ -21,10 +21,17 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **LogMode**: The log mode: { AutoBackup | Circular | Retained }
 * **SecurityDescriptor**: This is an SDDL string which configures access rights to the event log.
 
+### xEventLog
+
+* **LogName**: Name of the event log.
+* **Source**: Source(s) to create.
+
+
 ## Versions
 
 ### Unreleased
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
+* xEventLog added to allow creating new event logs with various sources.
 
 ### 1.1.0.0
 
