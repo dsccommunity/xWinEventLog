@@ -12,7 +12,7 @@
 # RootModule = ''
 
 # Version number of this module.
-moduleVersion = '1.2.0.0'
+moduleVersion = '1.3.0.0'
 
 # ID used to uniquely identify this module
 GUID = '5b4a0524-9c3f-44d6-933e-717c5c22b16a'
@@ -27,7 +27,7 @@ CompanyName = 'Microsoft Corporation'
 Copyright = '(c) 2014 Microsoft Corporation. All rights reserved'
 
 # Description of the functionality provided by this module
-Description = 'Configure Windows Event Logs'
+Description = 'Configure Windows Event Logs. THIS MODULE HAS BEEN DEPRECATED. It will no longer be released. Please use the "WinEventLog" resource in ComputerManagementDsc instead.'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '4.0'
@@ -101,8 +101,11 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
-* Fix PSSA errors.
+        ReleaseNotes = '* THIS MODULE HAS BEEN DEPRECATED. It will no longer be released.
+  Please use the "WinEventLog" resource in ComputerManagementDsc instead. 
+* Update appveyor.yml to use the default template.
+* Added default template files .codecov.yml, .gitattributes, and .gitignore, and
+  .vscode folder.
 
 '
 
@@ -117,6 +120,7 @@ PrivateData = @{
 # DefaultCommandPrefix = ''
 
 }
+
 
 
 
