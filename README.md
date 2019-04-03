@@ -31,6 +31,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 #### Unreleased
 
+### 1.3.0.0
+
 * THIS MODULE HAS BEEN DEPRECATED. It will no longer be released.
   Please use the "WinEventLog" resource in ComputerManagementDsc instead. 
 * Update appveyor.yml to use the default template.
