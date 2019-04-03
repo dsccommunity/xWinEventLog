@@ -27,7 +27,7 @@ CompanyName = 'Microsoft Corporation'
 Copyright = '(c) 2014 Microsoft Corporation. All rights reserved'
 
 # Description of the functionality provided by this module
-Description = 'Configure Windows Event Logs'
+Description = 'Configure Windows Event Logs. THIS MODULE HAS BEEN DEPRECATED. It will no longer be released. Please use the "WinEventLog" resource in ComputerManagementDsc instead.'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '4.0'
